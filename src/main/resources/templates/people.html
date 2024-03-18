@@ -9,18 +9,19 @@
 </head>
 <body>
 <div class="col-md-8 col-sm-11 mx-auto my-5">
-    <h2>People List</h2>
+    <h2 th:text="#{people.list}">People List</h2>
     <form method="post">
         <table class="table table-bordered table-sm">
             <thead>
             <tr>
                 <th scope="col">Select</th>
                 <th scope="col">ID</th>
-                <th scope="col">Last Name</th>
-                <th scope="col">First Name</th>
+                <th scope="col" th:text="#{last.name}">Last Name</th>
+                <th scope="col" th:text="#{first.name}">First Name</th>
                 <th scope="col">DOB</th>
                 <th scope="col" class="d-sm-none d-md-table-cell">email</th>
                 <th scope="col">Salary</th>
+                <th scope="col">Photo</th>
             </tr>
             </thead>
             <tbody>
@@ -34,9 +35,11 @@
                 <th scope="row" th:text="${person.id}">1</th>
                 <td th:text="${person.lastName}">Mark</td>
                 <td th:text="${person.firstName}">Otto</td>
-                <td th:text="${{person.dob}}">@mdo</td>
+                <td th:text="${#temporals.format(person.dob, 'MMMM dd, yyyy')}">@mdo</td>
                 <td th:text="${person.email}" class="d-sm-none d-md-table-cell">@mdo</td>
-                <td th:text="${{person.salary}}">@mdo</td>
+                <td th:text="${{person.salary}}" class="text-end">@mdo</td>
+<!--                <td th:text="${person.photoFilename}">@mdo</td>-->
+                <td><img th:if="${person.photoFilename}" th:src="@{/people/images/{filename}(filename=${person.photoFilename})}" height="32px" width="32px" /></td>
             </tr>
             <tr th:remove="all">
                 <th scope="row">2</th>
@@ -55,8 +58,12 @@
         <button type="submit" name="delete" value="true" class="btn btn-danger mb-5">Delete</button>
     </form>
 
+    <div class="alert alert-danger" role="alert" th:if="${errorMsg}" th:text="${errorMsg}">
+        A simple danger alert—check it out!
+    </div>
+
     <h2>Person Form</h2>
-    <form th:object="${person}" method="post" novalidate>
+    <form th:object="${person}" method="post" novalidate enctype="multipart/form-data">
         <div class="mb-3">
             <label for="firstName" class="form-label">First Name</label>
             <input type="text" class="form-control" id="firstName" th:field="*{firstName}" th:errorclass="is-invalid" aria-describedby="firstNameHelp">
@@ -92,6 +99,10 @@
             <div id="validationSalary" class="invalid-feedback" th:errors="*{salary}">
                 Please choose a username.
             </div>
+        </div>
+        <div class="mb-3">
+            <label for="photoFilename" class="form-label">Photo File</label>
+            <input class="form-control" type="file" id="photoFilename" th:field="*{photoFilename}">
         </div>
         <input type="hidden" th:field="*{id}"/>
         <button type="submit" class="btn btn-primary">Save Person</button>
